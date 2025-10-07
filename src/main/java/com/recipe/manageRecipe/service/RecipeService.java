@@ -3,6 +3,7 @@ package com.recipe.manageRecipe.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Optional;
 
 import com.recipe.manageRecipe.entity.Recipe;
 import com.recipe.manageRecipe.repository.RecipeRepository;
@@ -140,5 +141,8 @@ public class RecipeService {
 
     public Page<Recipe> findAll(Pageable pageable) {
         return recipeRepository.findAll(pageable);
+    }
+    public Optional<Recipe> findById(Long id) {
+        return recipeRepository.findById(id);
     }
 }

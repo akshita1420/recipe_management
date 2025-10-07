@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<body>
+<div layout:fragment="content">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="mb-4">Recipes</h2>
+
+            <!-- Search Form -->
+            <form id="searchForm" method="get" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" name="title" class="form-control" placeholder="Search Title"
+                               th:value="${param.title}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="cuisine" class="form-control" placeholder="Search Cuisine"
+                               th:value="${param.cuisine}">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="rating" class="form-control" placeholder="Min Rating"
+                               th:value="${param.rating}" step="0.1" min="0" max="5">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="size" class="form-select">
+                            <option value="15" th:selected="${pageSize == 15}">15 per page</option>
+                            <option value="25" th:selected="${pageSize == 25}">25 per page</option>
+                            <option value="50" th:selected="${pageSize == 50}">50 per page</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Results Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Cuisine</th>
+                        <th>Rating</th>
+                        <th>Total Time</th>
+                        <th>Serves</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(recipes)}" class="text-center">
+                        <td colspan="5">
+                            <div class="alert alert-info my-3">
+                                <i class="fas fa-search mb-3 fa-2x"></i>
+                                <h5>No Recipes Found</h5>
+                                <p>Try adjusting your search criteria</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:each="recipe : ${recipes}" class="recipe-row"
+                        th:onclick="'showRecipe(' + ${recipe.id} + ')'"
+                        style="cursor: pointer;">
+                        <td class="truncate" th:text="${recipe.title}"></td>
+                        <td th:text="${recipe.cuisine}"></td>
+                        <td>
+                            <div class="star-rating">
+                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:style="${recipe.rating >= i ? 'color: gold;' : 'color: #ddd;'}"></i>
+                                </th:block>
+                            </div>
+                        </td>
+                        <td th:text="${recipe.total_time + ' mins'}"></td>
+                        <td th:text="${recipe.serves}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/recipes(page=${currentPage - 1}, size=${pageSize}, title=${param.title}, cuisine=${param.cuisine}, rating=${param.rating})}">Previous</a>
+                    </li>
+                    <li class="page-item">
+                        <span class="page-link" th:text="${currentPage}"></span>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/recipes(page=${currentPage + 1}, size=${pageSize}, title=${param.title}, cuisine=${param.cuisine}, rating=${param.rating})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Recipe Detail Drawer -->
+    <div class="drawer" id="recipeDrawer">
+        <div class="drawer-header">
+            <button type="button" class="btn-close btn-close-white float-end" onclick="closeDrawer()"></button>
+            <h3 id="drawerTitle" class="mb-1"></h3>
+            <p id="drawerCuisine" class="mb-0 text-light"></p>
+        </div>
+
+        <div class="drawer-body p-3">
+            <div class="mb-4">
+                <h6>Description</h6>
+                <p id="drawerDescription"></p>
+            </div>
+
+            <div class="mb-4">
+                <h6>Cooking Time</h6>
+                <div class="d-flex align-items-center">
+                    <span id="drawerTotalTime"></span>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleTimeDetails()">
+                        <i id="timeToggleIcon" class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div id="timeDetails" class="mt-2 ps-3" style="display: none;">
+                    <p class="mb-1">Prep Time: <span id="drawerPrepTime"></span></p>
+                    <p class="mb-0">Cook Time: <span id="drawerCookTime"></span></p>
+                </div>
+            </div>
+
+            <div>
+                <h6>Nutrition Information</h6>
+                <table class="table table-sm">
+                    <tbody id="nutrientsTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

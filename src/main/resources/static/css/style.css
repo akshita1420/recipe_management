@@ -1,0 +1,55 @@
+.recipe-row {
+    transition: background-color 0.2s;
+}
+
+.recipe-row:hover {
+    background-color: #f8f9fa;
+}
+
+.truncate {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.star-rating {
+    white-space: nowrap;
+}
+
+.drawer {
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 400px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    transition: right 0.3s;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.drawer.open {
+    right: 0;
+}
+
+.drawer-header {
+    background-color: #0A400C;
+    color: white;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.drawer-body {
+    padding: 20px;
+}
+
+@media (max-width: 576px) {
+    .drawer {
+        width: 100%;
+        right: -100%;
+    }
+}
