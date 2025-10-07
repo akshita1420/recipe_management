@@ -140,6 +140,7 @@ public class RecipeService {
     }
 
     public Page<Recipe> findAll(Pageable pageable) {
+
         return recipeRepository.findAll(pageable);
     }
     public Optional<Recipe> findById(Long id) {
