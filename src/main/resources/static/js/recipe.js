@@ -1,16 +1,55 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize form handlers
     initializeSearchForm();
+    initializeStarRating();
 });
 
 function initializeSearchForm() {
     const form = document.getElementById('searchForm');
-    const inputs = form.querySelectorAll('input, select');
+    const inputs = form.querySelectorAll('input:not([name="rating"]), select');
 
     inputs.forEach(input => {
-        input.addEventListener('change', () => {
-            form.submit();
+        input.addEventListener('change', () => form.submit());
+    });
+}
+
+function initializeStarRating() {
+    const ratingInput = document.getElementById('ratingInput');
+    const stars = document.querySelectorAll('.star-rating-input .star');
+    const currentRating = parseFloat(ratingInput.value) || 0;
+
+    // Set initial state
+    updateStars(stars, currentRating);
+
+    // Add event listeners to stars
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.dataset.rating;
+            ratingInput.value = rating;
+            updateStars(stars, rating);
+            document.getElementById('searchForm').submit();
         });
+
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.rating;
+            highlightStars(stars, rating);
+        });
+    });
+
+    // Reset stars on mouseout
+    document.querySelector('.star-rating-input').addEventListener('mouseout', function() {
+        updateStars(stars, ratingInput.value);
+    });
+}
+
+function updateStars(stars, rating) {
+    stars.forEach(star => {
+        star.classList.toggle('active', star.dataset.rating <= rating);
+    });
+}
+
+function highlightStars(stars, rating) {
+    stars.forEach(star => {
+        star.classList.toggle('active', star.dataset.rating <= rating);
     });
 }
 
@@ -33,10 +72,10 @@ function showRecipe(id) {
 function updateDrawerContent(recipe) {
     document.getElementById('drawerTitle').textContent = recipe.title;
     document.getElementById('drawerCuisine').textContent = recipe.cuisine;
-    document.getElementById('drawerDescription').textContent = recipe.description;
-    document.getElementById('drawerTotalTime').textContent = `${recipe.total_time} mins`;
-    document.getElementById('drawerPrepTime').textContent = `${recipe.prep_time} mins`;
-    document.getElementById('drawerCookTime').textContent = `${recipe.cook_time} mins`;
+    document.getElementById('drawerDescription').textContent = recipe.description || 'No description available';
+    document.getElementById('drawerTotalTime').textContent = `${recipe.total_time || 0} mins`;
+    document.getElementById('drawerPrepTime').textContent = `${recipe.prep_time || 0} mins`;
+    document.getElementById('drawerCookTime').textContent = `${recipe.cook_time || 0} mins`;
 
     updateNutritionTable(recipe.nutrients);
 }
@@ -60,15 +99,18 @@ function updateNutritionTable(nutrients) {
 
         keys.forEach(key => {
             if (nutrients[key]) {
-                const row = `
+                nutrientsTable.innerHTML += `
                     <tr>
                         <td>${formatNutrientName(key)}</td>
                         <td>${nutrients[key]}</td>
                     </tr>
                 `;
-                nutrientsTable.innerHTML += row;
             }
         });
+
+        if (nutrientsTable.innerHTML === '') {
+            nutrientsTable.innerHTML = '<tr><td colspan="2">No nutrition information available</td></tr>';
+        }
     }
 }
 

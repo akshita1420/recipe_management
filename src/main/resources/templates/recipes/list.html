@@ -19,8 +19,17 @@
                                th:value="${param.cuisine}">
                     </div>
                     <div class="col-md-2">
-                        <input type="number" name="rating" class="form-control" placeholder="Min Rating"
-                               th:value="${param.rating}" step="0.1" min="0" max="5">
+                        <div class="rating-input">
+                            <label>Min Rating:</label>
+                            <div class="star-rating-input">
+                                <input type="hidden" name="rating" id="ratingInput" th:value="${param.rating}">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-2">
                         <select name="size" class="form-select">
@@ -31,6 +40,7 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">Search</button>
+                        <a href="/recipes" class="btn btn-outline-secondary w-100 mt-2">Clear</a>
                     </div>
                 </div>
             </form>
@@ -65,8 +75,9 @@
                         <td>
                             <div class="star-rating">
                                 <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                    <i class="fas fa-star" th:style="${recipe.rating >= i ? 'color: gold;' : 'color: #ddd;'}"></i>
+                                    <span class="star" th:classappend="${recipe.rating >= i ? 'filled' : ''}">★</span>
                                 </th:block>
+                                <span class="rating-value" th:text="${recipe.rating}"></span>
                             </div>
                         </td>
                         <td th:text="${recipe.total_time + ' mins'}"></td>
